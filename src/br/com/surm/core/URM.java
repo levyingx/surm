@@ -31,8 +31,48 @@ public class URM {
     }
   }
 
-  // IMPLEMENTE OUTRO CONSTRUTOR PARA A CLASSE URM QUE SATISFAZ DUAS CONDIÇÕES:
-  // (1) O CONSTRUTOR DEVE GARANTIR QUE O PROGRAMA SERÁ CARREGADO.
-  // (2) QUE UMA QUANTIDADE n DE REGISTRADORES SEJA INICIALIZADOS COM VALORES ESPECIFICOS (NÃO NECESSARIAMENTE SENDO 0).
+  public URM(Program program, int[] values){
+    this.program = program;
+    this.countProgram = 0;
+    this.registers = new ArrayList<>(values.length);
+    for(int i = 0; i < values.length; i++) {
+      this.registers.set(i, values[i]);
+    }
+  }
+
+  public URM(Program program, ArrayList<Integer> registers, int[] values){
+    this.countProgram = 0;
+    int max = 0;
+    for(int i = 0; i < registers.size(); i++){
+      if(max < registers.get(i)){
+        max = registers.get(i);
+      }
+    }
+    this.registers = new ArrayList<>(max);
+    for(int i = 0; i < registers.size(); i++){
+      if(registers.contains(i)){
+        this.registers.set(i, values[i]);
+      }else {
+        this.registers.set(i, 0);
+      }
+    }
+  }
+
+  public void execution(){
+    while(this.countProgram < this.program.getSize()){
+      Instruction instruction = this.program.getInstruction(countProgram);
+      String code = instruction.getCode();
+      switch(code) {
+        case "Z":
+          break;
+        case "S":
+          break;
+        case "T":
+          break;
+        default:
+          break;
+      }
+    }
+  }
 
 }

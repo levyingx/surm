@@ -36,4 +36,13 @@ public class Program {
     }
   }
 
+  public Instruction getInstruction(int numberInstruction) {
+    return this.instructions.get(numberInstruction);
+  }
+
+
+  public int getSize(){
+    return this.instructions.size();
+  }
+
 }

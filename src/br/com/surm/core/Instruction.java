@@ -28,4 +28,8 @@ public class Instruction {
     this.data = data;
   }
 
+  public String getCode(){
+    return this.code;
+  }
+
 }
