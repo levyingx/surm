@@ -23,6 +23,9 @@
  */
 package br.com.surm.cli;
 
+import java.util.HashMap;
+import java.util.Set;
+
 /**
  * 
  * This class is responsible for implementing the notion of a small command line interpreter.
@@ -31,8 +34,47 @@ package br.com.surm.cli;
  * @version 1.0
  */
 public class CLI {
+
   public static void main(String[] args) throws Exception {
-    int n = args.length;
-    System.out.println("Número de argumentos: " + n);
+    try {
+      if(args.length == 0) {
+        throw new IllegalArgumentException("Error: No parameters used!");
+      } else {
+        HashMap<String, Integer> count = countOccurrences(args);
+        if(count.get("H") > 0 && (count.get("F") + count.get("R")) > 0) {
+          throw new IllegalArgumentException("Error: The --H parameter must be used alone.");
+        } else {
+
+        }
+      }
+    } catch (Exception e) {
+      System.err.println(e.getMessage());
+    }
+  }
+
+  /**
+   * 
+   * Counts the number of times arguments were used on the command line.
+   * 
+   * @param args The arguments
+   * @return A table containing the parameters (table keys) and the value of how many times each parameter was used.
+   */
+  private static HashMap<String, Integer> countOccurrences(String[] args) {
+    HashMap<String, Integer> count = new HashMap<>();
+    count.put("H", 0);
+    count.put("F", 0);
+    count.put("R", 0);
+    for (String arg : args) {
+      if(arg.equals("--H")) {
+        count.put("H", count.get("H") + 1);
+      } else {
+        if(arg.equals("--F")) {
+          count.put("F", count.get("F") + 1);
+        } else {
+          count.put("R", count.get("R") + 1);
+        }
+      }
+    }
+    return count;
   }
 }
