@@ -83,10 +83,8 @@ public class URM {
     this.program = program;
     this.countProgram = 0;
     this.registers = new ArrayList<>(values.size());
-    int j = 0;
     for (int i : values) {
-      this.registers.set(j, i);
-      j++;
+      this.registers.add(i);
     }
   }
 
@@ -128,15 +126,15 @@ public class URM {
    * @param registers The “addresses” of the registers that should be initialized.
    * @param values The values to set on registers.
    */
-  public URM(Program program, Vector<Integer> values, Vector<Integer> registers) {
+  public URM(Program program, Vector<Integer> values, Vector<Integer> coordinates) {
 
     this.countProgram = 0;
     this.program = program;
-    this.registers = new ArrayList<>(registers.size());
+    this.registers = new ArrayList<>(coordinates.size());
     int j = 0;
     for (int i : values) {
-      while (registers.get(j) >= this.registers.size()) { // Extremely dangerous code, but it works nicely
-        this.registers.add(0);
+      if (coordinates.get(j) >= this.registers.size()) { 
+        this.registers.ensureCapacity(j);
       }
       this.registers.set(registers.get(j), i);
       j++;
