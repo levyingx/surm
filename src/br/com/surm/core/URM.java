@@ -152,14 +152,27 @@ public class URM {
       String code = instruction.getCode();
       switch(code) {
         case "Z":
+          this.registers.set(instruction.getData().get(0), 0);
+          this.countProgram++;
           break;
         case "S":
+          int s = this.registers.get(instruction.getData().get(0));
+          this.registers.set(instruction.getData().get(0), s+1);
+          this.countProgram++;
           break;
         case "T":
-          break;
-        case "J":
+          int copy = this.registers.get(instruction.getData().get(0));
+          this.registers.set(instruction.getData().get(1), copy);
+          this.countProgram++;
           break;
         default:
+          int m = instruction.getData().get(0);
+          int n = instruction.getData().get(1);
+          if(this.registers.get(m) == this.registers.get(n)){
+            this.countProgram = instruction.getData().get(2);
+          } else {
+            this.countProgram++; 
+          }
           break;
       }
     } else {
@@ -177,17 +190,40 @@ public class URM {
       String code = instruction.getCode();
       switch(code) {
         case "Z":
+          this.registers.set(instruction.getData().get(0), 0);
+          this.countProgram++;
           break;
         case "S":
+          int s = this.registers.get(instruction.getData().get(0));
+          this.registers.set(instruction.getData().get(0), s+1);
+          this.countProgram++;
           break;
         case "T":
-          break;
-        case "J":
+          int copy = this.registers.get(instruction.getData().get(0));
+          this.registers.set(instruction.getData().get(1), copy);
+          this.countProgram++;
           break;
         default:
+          int m = instruction.getData().get(0);
+          int n = instruction.getData().get(1);
+          if(this.registers.get(m) == this.registers.get(n)){
+            this.countProgram = instruction.getData().get(2);
+          } else {
+            this.countProgram++; 
+          }
           break;
       }
     }
+  }
+
+  @Override
+  public String toString() {
+    String output = "";
+    for(int i = 0; i < this.registers.size(); i++){
+      output = output + "R" + i + ": " + this.registers.get(i) + ", ";
+    }
+    output = output + "\n" + "count program: " + this.countProgram;
+    return output;
   }
 
 }

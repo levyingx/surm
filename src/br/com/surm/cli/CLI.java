@@ -21,48 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package br.com.surm.core;
-
-import java.util.ArrayList;
+package br.com.surm.cli;
 
 /**
  * 
- * This class implements the instructions execute on Unlimited Register Machine, as presented in the book 
- * Computability: An Introduction to Recursive Function Theory by Nigel Cutland.
- * 
+ * This class is responsible for implementing the notion of a small command line interpreter.
  * @author Valdigleis (valdigleis@dimap.ufrn.br)
- * @author INSIRA_SEU_NOME (INSIRA_SEU_EMAIL)
+ * @author Definir outra hora
  * @version 1.0
  */
-public class Instruction {
-  
-  private String code;
-  private ArrayList<Integer> data;
-
-  /**
-   * Constructor method of the Instruction class, which converts a String and an ArrayList of integers into 
-   * an instruction that can be executed by a URM.
-   * 
-   * @param code The type of instruction.
-   * @param data The infos used by instruction.
-   */
-  public Instruction(String code, ArrayList<Integer> data) {
-    this.code = code;
-    this.data = data;
+public class CLI {
+  public static void main(String[] args) throws Exception {
+    int n = args.length;
+    System.out.println("Número de argumentos: " + n);
   }
-
-  /**
-   * 
-   * Method that returns the code of Instruction.
-   * 
-   * @return The code id: Z, S, T or J.
-   */
-  public String getCode(){
-    return this.code;
-  }
-
-  public ArrayList<Integer> getData() {
-    return this.data;
-  }
-
 }

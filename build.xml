@@ -1,0 +1,26 @@
+<project name="SURM" default="jar" basedir=".">
+  
+  <!-- Definição de diretórios -->
+  <property name="src.dir" value="src"/>
+  <property name="build.dir" value="bin"/>
+  <property name="jar.dir" value="dist"/>
+  <property name="jar.name" value="SURM.jar"/>
+
+  <!-- Limpa diretórios de saída -->
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${jar.dir}"/>
+  </target>
+
+  <!-- Compilar código-fonte para a pasta bin -->
+  <target name="compile" depends="clean">
+    <mkdir dir="${build.dir}"/>
+    <javac srcdir="${src.dir}" destdir="${build.dir}"/>
+  </target>
+
+  <!-- Criar o arquivo .jar -->
+  <target name="jar" depends="compile">
+    <mkdir dir="${jar.dir}"/>
+    <jar destfile="${jar.dir}/${jar.name}" basedir="${build.dir}" manifest="${basedir}/manifest.mf"/>
+  </target>
+</project>
