@@ -59,6 +59,7 @@ public class CLI {
    * @param args The arguments
    * @return A table containing the parameters (table keys) and the value of how many times each parameter was used.
    */
+
   private static HashMap<String, Integer> countOccurrences(String[] args) {
     HashMap<String, Integer> count = new HashMap<>();
     count.put("H", 0);

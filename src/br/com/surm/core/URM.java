@@ -190,17 +190,33 @@ public class URM {
       String code = instruction.getCode();
       switch(code) {
         case "Z":
-          this.registers.set(instruction.getData().get(0), 0);
+          try {
+            this.registers.set(instruction.getData().get(0), 0);
+          } catch (Exception e) {
+            this.registers.ensureCapacity(instruction.getData().get(0));
+            this.registers.set(instruction.getData().get(0), 0);
+          } 
           this.countProgram++;
           break;
         case "S":
           int s = this.registers.get(instruction.getData().get(0));
-          this.registers.set(instruction.getData().get(0), s+1);
+          try {
+            this.registers.set(instruction.getData().get(0), s+1);
+          } catch (Exception e) {
+            this.registers.ensureCapacity(instruction.getData().get(0));
+            this.registers.set(instruction.getData().get(0), s+1);
+          } 
           this.countProgram++;
           break;
         case "T":
           int copy = this.registers.get(instruction.getData().get(0));
-          this.registers.set(instruction.getData().get(1), copy);
+          try {
+            this.registers.set(instruction.getData().get(1), copy);
+          } catch (Exception e) {
+            // Check segmentation fault 
+            this.registers.ensureCapacity(instruction.getData().get(1));
+            this.registers.set(instruction.getData().get(1), copy);
+          }
           this.countProgram++;
           break;
         default:
