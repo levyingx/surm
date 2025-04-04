@@ -134,7 +134,7 @@ public class URM {
     int j = 0;
     for (int i : values) {
       if (coordinates.get(j) >= this.registers.size()) { 
-        this.registers.ensureCapacity(j);
+        this.ensureSize(coordinates.get(j) + 1);
       }
       this.registers.set(registers.get(j), i);
       j++;
@@ -224,6 +224,19 @@ public class URM {
     }
     output = output + "\n" + "count program: " + this.countProgram;
     return output;
+  }
+
+  /**
+   * 
+   * Prevents index out of bounds exceptions
+   * 
+   * @param size New size for the registers
+   */
+  private void ensureSize(int size) {
+    this.registers.ensureCapacity(size);
+    while (this.registers.size() < size) {
+      this.registers.add(0);
+    }
   }
 
 }
