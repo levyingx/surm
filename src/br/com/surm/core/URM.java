@@ -90,92 +90,67 @@ public class URM {
 
   /**
    * 
-   * Constructor of the URM class, which loads the program and Initializes n specific registers with predefined values
-   * 
-   * @param program The program loaded into the URM.
-   * @param registers The “addresses” of the registers that should be initialized.
-   * @param values The values to set on registers.
-   */
-  public URM(Program program, ArrayList<Integer> registers, int[] values){
-    this.countProgram = 0;
-    int max = 0;
-    for(int i = 0; i < registers.size(); i++){
-      if(max < registers.get(i)){
-        max = registers.get(i);
-      }
-    }
-    if(max == 0) {
-      this.registers = new ArrayList<>(1);
-    } else {
-      this.registers = new ArrayList<>(max);
-    }
-    for(int i = 0; i < registers.size(); i++){
-      if(registers.contains(i)){
-        this.registers.set(i, values[i]);
-      }else {
-        this.registers.set(i, 0);
-      }
-    }
-  }
-
-  /**
-   * 
-   * Constructor of the URM class, which loads the program and Initializes n specific registers with a Vector of predefined values
-   * 
-   * @param program The program loaded into the URM.
-   * @param registers The “addresses” of the registers that should be initialized.
-   * @param values The values to set on registers.
-   */
-  public URM(Program program, Vector<Integer> values, Vector<Integer> coordinates) {
-
-    this.countProgram = 0;
-    this.program = program;
-    this.registers = new ArrayList<>(coordinates.size());
-    int j = 0;
-    for (int i : values) {
-      if (coordinates.get(j) >= this.registers.size()) { 
-        this.ensureSize(coordinates.get(j) + 1);
-      }
-      this.registers.set(registers.get(j), i);
-      j++;
-    }
-  }
-
-  /**
-   * 
    * Method that executes only one instruction of the program loaded in the URM, this instruction being the one pointed to by the URM program counter.
    * 
    */
-  public void runPointedInstruction() {
+  public void runInstruction() {
     if(this.countProgram < this.program.getSize()) {
       Instruction instruction = this.program.getInstruction(countProgram);
       String code = instruction.getCode();
       switch(code) {
         case "Z":
-          this.registers.set(instruction.getData().get(0), 0);
+          try {
+            this.registers.set(instruction.getData().get(0), 0); 
+          } catch (Exception e) {
+            this.addRegisters(instruction.getData().get(0));
+          }
           this.countProgram++;
           break;
         case "S":
-          int s = this.registers.get(instruction.getData().get(0));
-          this.registers.set(instruction.getData().get(0), s+1);
+          try {
+            int value = this.registers.get(instruction.getData().get(0));
+            this.registers.set(instruction.getData().get(0), value+1); 
+          } catch (Exception e) {
+            this.addRegisters(instruction.getData().get(0));
+            this.registers.set(instruction.getData().get(0), 1);
+          }
           this.countProgram++;
           break;
         case "T":
-          int copy = this.registers.get(instruction.getData().get(0));
-          this.registers.set(instruction.getData().get(1), copy);
+          try {
+            int value = this.registers.get(instruction.getData().get(0));
+            this.registers.set(instruction.getData().get(1), value);
+          } catch (Exception e) {
+            int m = instruction.getData().get(0);
+            int n = instruction.getData().get(1);
+            int maxRegister = Math.max(m, n);
+            this.addRegisters(maxRegister);
+            this.registers.set(n, this.registers.get(m));
+          }
           this.countProgram++;
           break;
         default:
-          int m = instruction.getData().get(0);
-          int n = instruction.getData().get(1);
-          if(this.registers.get(m) == this.registers.get(n)){
-            this.countProgram = instruction.getData().get(2);
-          } else {
-            this.countProgram++; 
+          try {
+            if( this.registers.get(instruction.getData().get(0)) == 
+                this.registers.get(instruction.getData().get(1))) {
+              this.countProgram = instruction.getData().get(2);
+            } else {
+              this.countProgram++; 
+            }
+          } catch (Exception e) {
+            int maxRegister = Math.max(
+              instruction.getData().get(0),
+              instruction.getData().get(1));
+            this.addRegisters(maxRegister);
+            if( this.registers.get(instruction.getData().get(0)) == 
+                this.registers.get(instruction.getData().get(1))) {
+              this.countProgram = instruction.getData().get(2) - 1;
+            } else {
+              this.countProgram++; 
+            }
           }
           break;
       }
-    } else {
     }
   }
 
@@ -186,33 +161,19 @@ public class URM {
    */
   public void runCompleteProgram(){
     while(this.countProgram < this.program.getSize()){
-      Instruction instruction = this.program.getInstruction(countProgram);
-      String code = instruction.getCode();
-      switch(code) {
-        case "Z":
-          this.registers.set(instruction.getData().get(0), 0);
-          this.countProgram++;
-          break;
-        case "S":
-          int s = this.registers.get(instruction.getData().get(0));
-          this.registers.set(instruction.getData().get(0), s+1);
-          this.countProgram++;
-          break;
-        case "T":
-          int copy = this.registers.get(instruction.getData().get(0));
-          this.registers.set(instruction.getData().get(1), copy);
-          this.countProgram++;
-          break;
-        default:
-          int m = instruction.getData().get(0);
-          int n = instruction.getData().get(1);
-          if(this.registers.get(m) == this.registers.get(n)){
-            this.countProgram = instruction.getData().get(2);
-          } else {
-            this.countProgram++; 
-          }
-          break;
-      }
+      
+    }
+  }
+
+  /**
+   * 
+   * Method to increase the number of working registers in the URM.
+   * 
+   * @param numberRegister The new number of working registers
+   */
+  private void addRegisters(int numberRegister) {
+    while (this.registers.size() < numberRegister) {
+      this.registers.add(0);
     }
   }
 
@@ -222,21 +183,8 @@ public class URM {
     for(int i = 0; i < this.registers.size(); i++){
       output = output + "R" + i + ": " + this.registers.get(i) + ", ";
     }
-    output = output + "\n" + "count program: " + this.countProgram;
+    output = output + "\n" + "count program: " + this.countProgram + "\n";
     return output;
-  }
-
-  /**
-   * 
-   * Prevents index out of bounds exceptions
-   * 
-   * @param size New size for the registers
-   */
-  private void ensureSize(int size) {
-    this.registers.ensureCapacity(size);
-    while (this.registers.size() < size) {
-      this.registers.add(0);
-    }
   }
 
 }

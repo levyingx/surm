@@ -23,8 +23,7 @@
  */
 package br.com.surm.cli;
 
-import java.util.HashMap;
-import java.util.Set;
+import java.util.ArrayList;
 
 /**
  * 
@@ -37,44 +36,89 @@ public class CLI {
 
   public static void main(String[] args) throws Exception {
     try {
-      if(args.length == 0) {
-        throw new IllegalArgumentException("Error: No parameters used!");
-      } else {
-        HashMap<String, Integer> count = countOccurrences(args);
-        if(count.get("H") > 0 && (count.get("F") + count.get("R")) > 0) {
-          throw new IllegalArgumentException("Error: The --H parameter must be used alone.");
-        } else {
+      boolean hasH = false;
+      boolean hasV = false;
+      boolean hasR = false;
+      boolean hasP = false;
 
+      int indexV = -1;
+      int indexR = -1;
+      int indexP = -1;
+
+      // get options and values
+      for (int i = 0; i < args.length; i++) {
+        if(args[i].equals("--H")){
+          hasH = true;
+        } else {
+          if(args[i].equals("--V")){
+            hasV = true;
+            indexV = i;
+          } else {
+            if(args[i].equals("--R")){
+              hasR = true;
+              indexR = i;
+            } else {
+              if(args[i].equals("--P")){
+                hasP = true;
+                indexP = i;
+              }
+            }
+          }
         }
       }
+
+      if (hasH) {
+        if (hasV || hasR || hasP) {
+          throw new IllegalArgumentException("The --H argument must be used alone!");
+        } else {
+          runHelp();
+        }
+      }
+
+      ArrayList<Integer> values = new ArrayList<>();
+
+      if (hasV) {
+        if (hasR) {
+          throw new IllegalArgumentException("The --R and --V arguments should not be used together!");
+        } else {
+          if (hasP) {
+            for (int i = indexV + 1; i < indexP; i++) {
+              values.add(Integer.parseInt(args[i]));
+            }
+          } else {
+            throw new IllegalArgumentException("The --V argument must be used with the --P argument!");
+          }
+        }
+      }
+
+      if (hasV && values.isEmpty()) {
+        throw new IllegalArgumentException("The --V argument must be followed by n non-negative integer values.");
+      }
+
+      if (hasR) {
+        if (hasP) {
+          for (int i = indexR + 1; i < indexP; i++) {
+            values.add(Integer.parseInt(args[i]));
+          }
+        } else {
+          throw new IllegalArgumentException("The --R argument must be used with the --P argument!");
+        }
+      }
+
+      if (hasR && (values.isEmpty() || values.size() % 2 == 1)) {
+        throw new IllegalArgumentException("The --V argument must be followed by 2* n non-negative integer values.");
+      }
+
+      
+
+
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      System.err.println("Error: " + e.getMessage());
     }
   }
 
-  /**
-   * 
-   * Counts the number of times arguments were used on the command line.
-   * 
-   * @param args The arguments
-   * @return A table containing the parameters (table keys) and the value of how many times each parameter was used.
-   */
-  private static HashMap<String, Integer> countOccurrences(String[] args) {
-    HashMap<String, Integer> count = new HashMap<>();
-    count.put("H", 0);
-    count.put("F", 0);
-    count.put("R", 0);
-    for (String arg : args) {
-      if(arg.equals("--H")) {
-        count.put("H", count.get("H") + 1);
-      } else {
-        if(arg.equals("--F")) {
-          count.put("F", count.get("F") + 1);
-        } else {
-          count.put("R", count.get("R") + 1);
-        }
-      }
-    }
-    return count;
+  private static String runHelp() {
+    return null;
   }
+  
 }
