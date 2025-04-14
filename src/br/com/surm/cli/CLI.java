@@ -23,6 +23,8 @@
  */
 package br.com.surm.cli;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 /**
@@ -106,10 +108,23 @@ public class CLI {
       }
 
       if (hasR && (values.isEmpty() || values.size() % 2 == 1)) {
-        throw new IllegalArgumentException("The --V argument must be followed by 2* n non-negative integer values.");
+        throw new IllegalArgumentException("The --V argument must be followed by 2*n non-negative integer values.");
       }
 
-      
+      for(int i = 0; i < values.size(); i++){
+        if(values.get(i) < 0){
+          throw new IllegalArgumentException("The value " + values.get(i) + " is less than zero, cannot be accepted!");
+        }
+      }
+
+      String filePath = args[indexP + 1];
+      File file = new File(filePath);
+      String content = Files.readString(file.toPath());
+      String[] lines = content.split("\n");
+
+      if (!file.exists() || !file.isFile()) {
+        throw new IllegalArgumentException("The path provided by argument --P not is a file!");
+      }
 
 
     } catch (Exception e) {
