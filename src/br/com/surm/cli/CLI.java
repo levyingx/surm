@@ -26,8 +26,10 @@ package br.com.surm.cli;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import br.com.surm.core.Program;
+import br.com.surm.core.URM;
 import br.com.surm.utils.URMCompile;
 
 
@@ -132,6 +134,18 @@ public class CLI {
 
       URMCompile urmc = new URMCompile();
       Program program = urmc.compile(lines);
+
+      URM urm = new URM(program, values);
+
+      System.out.println(urm.toString());
+
+      Scanner scanner = new Scanner(System.in);
+
+      while (urm.getCountProgram() <= urm.getProgram().getSize()) {
+        urm.runInstruction();
+        System.out.println(urm.toString());
+        String input = scanner.nextLine(); 
+      }
 
     
 

@@ -79,7 +79,7 @@ public class URM {
    * @param program The program loaded into the URM.
    * @param values The n values to set in first n registers.
    */
-  public URM(Program program, Vector<Integer> values) {
+  public URM(Program program, ArrayList<Integer> values) {
     this.program = program;
     this.countProgram = 0;
     this.registers = new ArrayList<>(values.size());
@@ -163,6 +163,14 @@ public class URM {
     while(this.countProgram < this.program.getSize()){
       
     }
+  }
+
+  public int getCountProgram() {
+    return this.countProgram;
+  }
+
+  public Program getProgram() {
+    return this.program;
   }
 
   /**
