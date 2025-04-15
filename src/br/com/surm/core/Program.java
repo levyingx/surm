@@ -85,4 +85,12 @@ public class Program {
     return this.instructions.size();
   }
 
+  @Override
+  public String toString() {
+    String output = "";
+    for(int i = 0; i < this.getSize(); i++) {
+      output = output.concat(this.instructions.get(i).toString() + "\n");
+    }
+    return output;
+  }
 }

@@ -23,9 +23,12 @@
  */
 package br.com.surm.cli;
 
-import java.io.File;
-import java.nio.file.Files;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
+
+import br.com.surm.core.Program;
+import br.com.surm.utils.URMCompile;
 
 
 /**
@@ -119,26 +122,16 @@ public class CLI {
       }
 
       String filePath = args[indexP + 1];
-      File file = new File(filePath);
       
-      if (!file.exists() || !file.isFile()) {
-        throw new IllegalArgumentException("The path provided by argument --P not is a file!");
+      BufferedReader reader = new BufferedReader(new FileReader(filePath));
+      ArrayList<String> lines = new ArrayList<>();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        lines.add(line);
       }
 
-      String content = Files.readString(file.toPath());
-      String[] lines = content.split("\\n");
-
-      for (int i = 0; i < lines.length; i++) {
-        String line = lines[i];
-        System.out.println("Interação " + (i+1) + " : " + line);
-        if(line.matches("S\\((0|[1-9][0-9]*)\\)")) {
-          System.out.println("Instrução S");
-        }
-
-        if(line.matches("J\\((0|[1-9][0-9]*),(0|[1-9][0-9]*),([1-9][0-9]*)\\)")) {
-          System.out.println("Instrução J foi a linha " + (i+1) );
-        }
-      }
+      URMCompile urmc = new URMCompile();
+      Program program = urmc.compile(lines);
 
     
 

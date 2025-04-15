@@ -65,4 +65,10 @@ public class Instruction {
     return this.data;
   }
 
+  @Override
+  public String toString() {
+    String output = (this.code + "(" + this.data.toString() + ")").replace("[", "");
+    return output.replace("]", "");
+  }
+
 }
