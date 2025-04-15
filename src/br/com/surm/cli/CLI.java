@@ -26,7 +26,6 @@ package br.com.surm.cli;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import br.com.surm.core.Program;
 import br.com.surm.core.URM;
@@ -132,23 +131,44 @@ public class CLI {
         lines.add(line);
       }
 
+      reader.close();
+
       URMCompile urmc = new URMCompile();
       Program program = urmc.compile(lines);
+      URM urm;
 
-      URM urm = new URM(program, values);
-
-      System.out.println(urm.toString());
-
-      Scanner scanner = new Scanner(System.in);
-
-      while (urm.getCountProgram() <= urm.getProgram().getSize()) {
-        urm.runInstruction();
-        System.out.println(urm.toString());
-        String input = scanner.nextLine(); 
+      if(hasR){
+        ArrayList<Integer> registers = new ArrayList<>();
+        ArrayList<Integer> rValues = new ArrayList<>();
+        for (int i = 0; i < values.size(); i = i + 2) {
+          registers.add(values.get(i));
+          rValues.add(values.get(i+1));
+        }
+        urm = new URM(program, registers, rValues);
+      } else {
+        if (hasV) {
+          urm = new URM(program, values);
+        } else {
+          urm = new URM(program);
+        }
       }
 
-    
-
+      //System.out.println(urm.toString());
+      
+      while (true) {
+        if(urm.getCountProgram() <= urm.getProgram().getSize()) {
+          System.out.println(urm.toString());
+          System.out.println("Executing... " + urm.getNextInstruction().toString());
+          urm.runInstruction();
+        } else {
+          break;
+        }
+        try {
+          Thread.sleep(500);
+        } catch (Exception e) {
+          System.out.println("Stop: " + e.getMessage());
+        }
+      }
     } catch (Exception e) {
       System.err.println("Error: " + e.getMessage());
     }

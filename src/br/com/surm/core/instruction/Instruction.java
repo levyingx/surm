@@ -21,9 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package br.com.surm.core;
-
-import java.util.ArrayList;
+package br.com.surm.core.instruction;
 
 /**
  * 
@@ -34,21 +32,18 @@ import java.util.ArrayList;
  * @author INSIRA_SEU_NOME (INSIRA_SEU_EMAIL)
  * @version 1.0
  */
-public class Instruction {
+public abstract class Instruction {
   
-  private String code;
-  private ArrayList<Integer> data;
+  private final String code;
 
   /**
    * Constructor method of the Instruction class, which converts a String and an ArrayList of integers into 
    * an instruction that can be executed by a URM.
    * 
-   * @param code The type of instruction.
-   * @param data The infos used by instruction.
+   * @param code The code of instruction.
    */
-  public Instruction(String code, ArrayList<Integer> data) {
+  public Instruction(String code) {
     this.code = code;
-    this.data = data;
   }
 
   /**
@@ -61,14 +56,9 @@ public class Instruction {
     return this.code;
   }
 
-  public ArrayList<Integer> getData() {
-    return this.data;
-  }
-
   @Override
   public String toString() {
-    String output = (this.code + "(" + this.data.toString() + ")").replace("[", "");
-    return output.replace("]", "");
+    return this.code;
   }
 
 }

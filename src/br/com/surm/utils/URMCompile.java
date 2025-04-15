@@ -2,8 +2,12 @@ package br.com.surm.utils;
 
 import java.util.ArrayList;
 
-import br.com.surm.core.Instruction;
 import br.com.surm.core.Program;
+import br.com.surm.core.instruction.Instruction;
+import br.com.surm.core.instruction.JumpInstruction;
+import br.com.surm.core.instruction.SuccInstruction;
+import br.com.surm.core.instruction.TransferInstruction;
+import br.com.surm.core.instruction.ZeroInstruction;
 
 public class URMCompile {
   
@@ -79,45 +83,40 @@ public class URMCompile {
     return nStr.matches(this.regexJ);
   }
 
-  private Instruction createZeroInstruction(String input) {
+  private ZeroInstruction createZeroInstruction(String input) {
     int start = input.indexOf('(');
     int end = input.indexOf(')');
     String nStr = input.substring(start + 1, end);
-    ArrayList<Integer> values = new ArrayList<>();
-    values.add(Integer.parseInt(nStr));
-    return new Instruction("Z", values);
+    int n = Integer.parseInt(nStr);
+    return new ZeroInstruction("Z", n);
   }
 
-  private Instruction createSuccInstruction(String input) {
+  private SuccInstruction createSuccInstruction(String input) {
     int start = input.indexOf('(');
     int end = input.indexOf(')');
     String nStr = input.substring(start + 1, end);
-    ArrayList<Integer> values = new ArrayList<>();
-    values.add(Integer.parseInt(nStr));
-    return new Instruction("S", values);
+    int n = Integer.parseInt(nStr);
+    return new SuccInstruction("S", n);
   }
 
-  private Instruction createTransferInstruction(String input) {
+  private TransferInstruction createTransferInstruction(String input) {
     int start = input.indexOf('(');
     int end = input.indexOf(')');
     String nStr = input.substring(start + 1, end);
     String[] vStr = nStr.split(",");
-    ArrayList<Integer> values = new ArrayList<>();
-    for (String value : vStr) {
-      values.add(Integer.parseInt(value));
-    }
-    return new Instruction("T", values);
+    int valueA = Integer.parseInt(vStr[0]);
+    int valueB = Integer.parseInt(vStr[1]);
+    return new TransferInstruction("T", valueA, valueB);
   }
 
-  private Instruction createJumpInstruction(String input) {
+  private JumpInstruction createJumpInstruction(String input) {
     int start = input.indexOf('(');
     int end = input.indexOf(')');
     String nStr = input.substring(start + 1, end);
     String[] vStr = nStr.split(",");
-    ArrayList<Integer> values = new ArrayList<>();
-    for (String value : vStr) {
-      values.add(Integer.parseInt(value));
-    }
-    return new Instruction("J", values);
+    int valueA = Integer.parseInt(vStr[0]);
+    int valueB = Integer.parseInt(vStr[1]);
+    int valueC = Integer.parseInt(vStr[2]);
+    return new JumpInstruction("J", valueA, valueB, valueC);
   }
 }

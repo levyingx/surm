@@ -25,6 +25,8 @@ package br.com.surm.core;
 
 import java.util.ArrayList;
 
+import br.com.surm.core.instruction.Instruction;
+
 /**
  * 
  * This class implements the notion of program to Unlimited Register Machine.

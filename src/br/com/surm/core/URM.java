@@ -24,7 +24,13 @@
 package br.com.surm.core;
 
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.Collections;
+
+import br.com.surm.core.instruction.Instruction;
+import br.com.surm.core.instruction.JumpInstruction;
+import br.com.surm.core.instruction.SuccInstruction;
+import br.com.surm.core.instruction.TransferInstruction;
+import br.com.surm.core.instruction.ZeroInstruction;
 
 /**
  * 
@@ -49,8 +55,9 @@ public class URM {
    */
   public URM(Program program) {
     this.program = program;
-    this.countProgram = 0;
-    this.registers = new ArrayList<>(10);
+    this.countProgram = 1;
+    this.registers = new ArrayList<>();
+    this.addRegisters(10);
     for(int i = 0; i < 10; i++) {
       this.registers.set(i, 0);
     }
@@ -65,10 +72,10 @@ public class URM {
    */
   public URM(Program program, int[] values){
     this.program = program;
-    this.countProgram = 0;
-    this.registers = new ArrayList<>(values.length);
+    this.countProgram = 1;
+    this.registers = new ArrayList<>();
     for(int i = 0; i < values.length; i++) {
-      this.registers.set(i, values[i]);
+      this.registers.add(values[i]);
     }
   }
 
@@ -81,10 +88,40 @@ public class URM {
    */
   public URM(Program program, ArrayList<Integer> values) {
     this.program = program;
-    this.countProgram = 0;
-    this.registers = new ArrayList<>(values.size());
+    this.countProgram = 1;
+    this.registers = new ArrayList<>();
     for (int i : values) {
       this.registers.add(i);
+    }
+  }
+
+  /**
+   * 
+   * The number of registers and values ​​are distinct.
+   * 
+   * @param program The program loaded into the URM.
+   * @param registers The addresses of the registers.
+   * @param values The n values to set in first on registers.
+   */
+  public URM(Program program, ArrayList<Integer> registers, ArrayList<Integer> values) {
+    try {
+      if(registers.size() != values.size()) {
+        throw new IllegalArgumentException("The number of registers is different from the number of values.");
+      } else {
+        this.registers = new ArrayList<>();
+        ArrayList<Integer> secureCopy = new ArrayList<>(registers);
+        Collections.sort(secureCopy);
+        int max = secureCopy.removeLast();
+        this.addRegisters(max+1);
+        for(int i = 0; i < registers.size(); i++) {
+          int m = registers.get(i);
+          int n = values.get(i);
+          this.registers.set(m, n);
+        }
+      }
+    } finally {
+      this.program = program;
+      this.countProgram = 1;
     }
   }
 
@@ -94,62 +131,40 @@ public class URM {
    * 
    */
   public void runInstruction() {
-    if(this.countProgram < this.program.getSize()) {
-      Instruction instruction = this.program.getInstruction(countProgram);
-      String code = instruction.getCode();
-      switch(code) {
-        case "Z":
-          try {
-            this.registers.set(instruction.getData().get(0), 0); 
-          } catch (Exception e) {
-            this.addRegisters(instruction.getData().get(0));
-          }
+    if(this.countProgram <= this.program.getSize()) {
+      Instruction instruction = this.program.getInstruction(countProgram - 1);
+      if(instruction instanceof ZeroInstruction) {
+        ZeroInstruction tmp = (ZeroInstruction) instruction;
+        int n = tmp.getData();
+        this.registers.set(n, 0);
+        this.countProgram++;
+      } else {
+        if(instruction instanceof SuccInstruction) {
+          SuccInstruction tmp = (SuccInstruction) instruction;
+          int n = tmp.getData();
+          int v = this.registers.get(n) + 1;
+          this.registers.set(n, v);
           this.countProgram++;
-          break;
-        case "S":
-          try {
-            int value = this.registers.get(instruction.getData().get(0));
-            this.registers.set(instruction.getData().get(0), value+1); 
-          } catch (Exception e) {
-            this.addRegisters(instruction.getData().get(0));
-            this.registers.set(instruction.getData().get(0), 1);
-          }
-          this.countProgram++;
-          break;
-        case "T":
-          try {
-            int value = this.registers.get(instruction.getData().get(0));
-            this.registers.set(instruction.getData().get(1), value);
-          } catch (Exception e) {
-            int m = instruction.getData().get(0);
-            int n = instruction.getData().get(1);
-            int maxRegister = Math.max(m, n);
-            this.addRegisters(maxRegister);
-            this.registers.set(n, this.registers.get(m));
-          }
-          this.countProgram++;
-          break;
-        default:
-          try {
-            if( this.registers.get(instruction.getData().get(0)) == 
-                this.registers.get(instruction.getData().get(1))) {
-              this.countProgram = instruction.getData().get(2);
+        } else {
+          if(instruction instanceof TransferInstruction) {
+            TransferInstruction tmp = (TransferInstruction) instruction;
+            int m = tmp.getFirstData();
+            int n = tmp.getSecondData();
+            int v = this.registers.get(m);
+            this.registers.set(n, v);
+            this.countProgram++;
+          } else {
+            JumpInstruction tmp = (JumpInstruction) instruction;
+            int m = tmp.getFirstData();
+            int n = tmp.getSecondData();
+            int p = tmp.getThirdData();
+            if(this.registers.get(m) == this.registers.get(n)) {
+              this.countProgram = p;
             } else {
-              this.countProgram++; 
-            }
-          } catch (Exception e) {
-            int maxRegister = Math.max(
-              instruction.getData().get(0),
-              instruction.getData().get(1));
-            this.addRegisters(maxRegister);
-            if( this.registers.get(instruction.getData().get(0)) == 
-                this.registers.get(instruction.getData().get(1))) {
-              this.countProgram = instruction.getData().get(2) - 1;
-            } else {
-              this.countProgram++; 
+              this.countProgram++;
             }
           }
-          break;
+        }
       }
     }
   }
@@ -173,6 +188,10 @@ public class URM {
     return this.program;
   }
 
+  public Instruction getNextInstruction() {
+    return this.program.getInstruction(this.countProgram - 1);
+  }
+
   /**
    * 
    * Method to increase the number of working registers in the URM.
@@ -187,9 +206,17 @@ public class URM {
 
   @Override
   public String toString() {
-    String output = "";
+    String output = "Registers:\n";
     for(int i = 0; i < this.registers.size(); i++){
-      output = output + "R" + i + ": " + this.registers.get(i) + ", ";
+      if(i % 2 == 0) {
+        if(i < this.registers.size() - 1) {
+          output = output + "R" + i + ": " + this.registers.get(i) + ", ";
+        } else {
+          output = output + "R" + i + ": " + this.registers.get(i);
+        }
+      } else {
+        output = output + "R" + i + ": " + this.registers.get(i) + "\n";
+      }
     }
     output = output + "\n" + "count program: " + this.countProgram + "\n";
     return output;
