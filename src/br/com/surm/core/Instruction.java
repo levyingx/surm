@@ -31,13 +31,13 @@ import java.util.ArrayList;
  * Computability: An Introduction to Recursive Function Theory by Nigel Cutland.
  * 
  * @author Valdigleis (valdigleis@dimap.ufrn.br)
- * @author INSIRA_SEU_NOME (INSIRA_SEU_EMAIL)
- * @version 1.0
+ * @author Levy (levyfernandes14@gmail.com)
+ * @version 1.1
  */
-public class Instruction {
+public abstract class Instruction {
   
-  private String code;
-  private ArrayList<Integer> data;
+  private final String code;
+  protected ArrayList<Integer> data;
 
   /**
    * Constructor method of the Instruction class, which converts a String and an ArrayList of integers into 
@@ -50,6 +50,13 @@ public class Instruction {
     this.code = code;
     this.data = data;
   }
+
+  /**
+   * Method that implements each subclass specific methods (Z, S, T or J).
+   * @param code The type of instruction.
+   * @param data The infos used by instruction.
+   */
+  public abstract void method(String code, ArrayList<Integer> data);
 
   /**
    * 
