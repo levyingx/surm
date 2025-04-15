@@ -29,7 +29,6 @@ package br.com.surm.core.instruction;
  * Computability: An Introduction to Recursive Function Theory by Nigel Cutland.
  * 
  * @author Valdigleis (valdigleis@dimap.ufrn.br)
- * @author INSIRA_SEU_NOME (INSIRA_SEU_EMAIL)
  * @version 1.0
  */
 public abstract class Instruction {

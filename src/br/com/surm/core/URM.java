@@ -171,23 +171,30 @@ public class URM {
 
   /**
    * 
-   * Method that executes the program loaded in the URM without interruptions.
+   * Returns the instruction number pointed to by the URM's program counter.
    * 
+   * @return the value on count of the program.
    */
-  public void runCompleteProgram(){
-    while(this.countProgram < this.program.getSize()){
-      
-    }
-  }
-
   public int getCountProgram() {
     return this.countProgram;
   }
 
+  /**
+   * 
+   * Returns the program that was loaded by the URM.
+   * 
+   * @return the program.
+   */
   public Program getProgram() {
     return this.program;
   }
 
+  /**
+   * 
+   * Return to the next instruction that is loaded to be executed.
+   * 
+   * @return the next instruction.
+   */
   public Instruction getNextInstruction() {
     return this.program.getInstruction(this.countProgram - 1);
   }
