@@ -23,35 +23,14 @@
  */
 package br.com.surm.utils;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-
 /**
- * 
- * This class implements a method for converting ("compiling") a file into an ArrayList of instructions.
- * 
- * @author Filipe Campos (filipe.campos.127@ufrn.edu.br)
+ * @author Valdigleis (valdigleis@dimap.ufrn.br)
  * @version 1.0
  */
-public class ConvertFile { // I haven't tried to run this code yet, so it may not work as expected
+public class InstructionsException extends RuntimeException {
+  
+  public InstructionsException(String mensagem) {
+    super(mensagem);
+  }
 
-    /**
-     * Method for converting a file into an ArrayList of instructions.
-     * 
-     * @param path The path to the file to be converted.
-     * @return An ArrayList of instructions.
-     */
-    public ArrayList<String> compile(String path) throws IOException {
-        Path filePath = Path.of(path);
-        String content = Files.readString(filePath);
-        String[] lines = content.split("\n");
-        ArrayList<String> instructions = new ArrayList<>();
-        for (String line : lines) {
-            instructions.add(line.trim());
-        }
-
-        return instructions;
-    }
 }

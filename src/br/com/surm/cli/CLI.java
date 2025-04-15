@@ -27,6 +27,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
+
 /**
  * 
  * This class is responsible for implementing the notion of a small command line interpreter.
@@ -119,13 +120,27 @@ public class CLI {
 
       String filePath = args[indexP + 1];
       File file = new File(filePath);
-      String content = Files.readString(file.toPath());
-      String[] lines = content.split("\n");
-
+      
       if (!file.exists() || !file.isFile()) {
         throw new IllegalArgumentException("The path provided by argument --P not is a file!");
       }
 
+      String content = Files.readString(file.toPath());
+      String[] lines = content.split("\\n");
+
+      for (int i = 0; i < lines.length; i++) {
+        String line = lines[i];
+        System.out.println("Interação " + (i+1) + " : " + line);
+        if(line.matches("S\\((0|[1-9][0-9]*)\\)")) {
+          System.out.println("Instrução S");
+        }
+
+        if(line.matches("J\\((0|[1-9][0-9]*),(0|[1-9][0-9]*),([1-9][0-9]*)\\)")) {
+          System.out.println("Instrução J foi a linha " + (i+1) );
+        }
+      }
+
+    
 
     } catch (Exception e) {
       System.err.println("Error: " + e.getMessage());
