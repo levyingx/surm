@@ -4,10 +4,8 @@ import java.util.ArrayList;
 
 import br.com.surm.core.Program;
 import br.com.surm.core.instruction.Instruction;
-import br.com.surm.core.instruction.JumpInstruction;
-import br.com.surm.core.instruction.SuccInstruction;
-import br.com.surm.core.instruction.TransferInstruction;
-import br.com.surm.core.instruction.ZeroInstruction;
+import br.com.surm.core.instruction.InstructionManyArgs;
+import br.com.surm.core.instruction.InstructionOneArg;
 
 public class URMCompile {
   
@@ -26,97 +24,86 @@ public class URMCompile {
     for (int i = 0; i < inputs.size(); i++) {
       String tmp = inputs.get(i);
       char C = tmp.charAt(0);
-      switch (C) {
-        case 'Z':
-          if(this.isZeroOrSuccInstruction(tmp)){
-            instructions.add(this.createZeroInstruction(tmp));
-          } else {
-            throw new InstructionsException("Error: The line " + (i+1) + " is not a well-defined Z instruction");
-          }
-          break;
-        case 'S':
-          if(this.isZeroOrSuccInstruction(tmp)){
-            instructions.add(this.createSuccInstruction(tmp));
-          } else {
-            throw new InstructionsException("Error: The line " + (i+1) + " is not a well-defined S instruction");
-          }
-          break;
-        case 'T':
-          if(this.isTransferInstruction(tmp)){
-            instructions.add(this.createTransferInstruction(tmp));
-          } else {
-            throw new InstructionsException("Error: The line " + (i+1) + " is not a well-defined J instruction");
-          }
-          break;
-        case 'J':
-          if(this.isJumpInstruction(tmp)){
-            instructions.add(this.createJumpInstruction(tmp));
-          } else {
-            throw new InstructionsException("Error: The line " + (i+1) + " is not a well-defined J instruction");
-          }
-          break;
-        default:
-          break;
+      if(C == 'S' || C == 'Z') {
+        if(this.isInstructionOneArgValid(tmp)){
+          instructions.add(this.createInstructionOneArg(tmp));
+        } else {
+          throw new InstructionsException("The instruction " + tmp + " not is a well-formed instruction!");
+        }
+      } else {
+        if(this.isInstructionManyArgsValid(tmp)){
+          instructions.add(this.createInstructionManyArgs(tmp));
+        } else {
+          throw new InstructionsException("The instruction " + tmp + " not is a well-formed instruction!");
+        }
       }
     }
     return new Program(instructions);
   }
 
-  private boolean isZeroOrSuccInstruction(String input) {
+  /**
+   * 
+   * Method that checks whether a word represents a well-formed instruction of an argument, that is, it checks whether the word is of the 
+   * form S(n) or Z(n), where n is an integer greater than or equal to 0.
+   * 
+   * @param input An input word.
+   * @return True if is well-formed instruction, false otherwise.
+   */
+  private boolean isInstructionOneArgValid(String input) {
     int start = input.indexOf('(');
     int end = input.indexOf(')');
     String nStr = input.substring(start + 1, end);
     return nStr.matches(this.regexZS);
   }
 
-  private boolean isTransferInstruction(String input) {
+  /**
+   * 
+   * Method that checks whether a word represents a well-formed instruction of many arguments, that is, it checks whether the word is of the 
+   * form T(m,n) or J(m,n,p), where m, n is an integer greater or equal than 0 and p is an integer greater than 0.
+   * 
+   * @param input An input word.
+   * @return True if is well-formed instruction, false otherwise.
+   */
+  private boolean isInstructionManyArgsValid(String input) {
     int start = input.indexOf('(');
     int end = input.indexOf(')');
     String nStr = input.substring(start + 1, end);
-    return nStr.matches(this.regexT);
+    return nStr.matches(this.regexT) || nStr.matches(this.regexJ);
   }
 
-  private boolean isJumpInstruction(String input) {
+  /**
+   * 
+   * Method that creates S or Z instructions from an input word.
+   * 
+   * @param input An input word.
+   * @return An instruction S or Z.
+   */
+  private InstructionOneArg createInstructionOneArg(String input) {
     int start = input.indexOf('(');
     int end = input.indexOf(')');
+    String code = input.substring(0, 1);
     String nStr = input.substring(start + 1, end);
-    return nStr.matches(this.regexJ);
+    int data = Integer.parseInt(nStr);
+    return new InstructionOneArg(code, data);
   }
 
-  private ZeroInstruction createZeroInstruction(String input) {
+  /**
+   * 
+   * Method that creates T or J instructions from an input word.
+   * 
+   * @param input An input word.
+   * @return An instruction T or J.
+   */
+  private InstructionManyArgs createInstructionManyArgs(String input) {
     int start = input.indexOf('(');
     int end = input.indexOf(')');
-    String nStr = input.substring(start + 1, end);
-    int n = Integer.parseInt(nStr);
-    return new ZeroInstruction("Z", n);
+    String code = input.substring(0, 1);
+    String[] vStr = input.substring(start + 1, end).split(",");
+    ArrayList<Integer> values = new ArrayList<>();
+    for(int i = 0; i < vStr.length; i++){
+      values.add(Integer.parseInt(vStr[i]));
+    }
+    return new InstructionManyArgs(code, values);
   }
 
-  private SuccInstruction createSuccInstruction(String input) {
-    int start = input.indexOf('(');
-    int end = input.indexOf(')');
-    String nStr = input.substring(start + 1, end);
-    int n = Integer.parseInt(nStr);
-    return new SuccInstruction("S", n);
-  }
-
-  private TransferInstruction createTransferInstruction(String input) {
-    int start = input.indexOf('(');
-    int end = input.indexOf(')');
-    String nStr = input.substring(start + 1, end);
-    String[] vStr = nStr.split(",");
-    int valueA = Integer.parseInt(vStr[0]);
-    int valueB = Integer.parseInt(vStr[1]);
-    return new TransferInstruction("T", valueA, valueB);
-  }
-
-  private JumpInstruction createJumpInstruction(String input) {
-    int start = input.indexOf('(');
-    int end = input.indexOf(')');
-    String nStr = input.substring(start + 1, end);
-    String[] vStr = nStr.split(",");
-    int valueA = Integer.parseInt(vStr[0]);
-    int valueB = Integer.parseInt(vStr[1]);
-    int valueC = Integer.parseInt(vStr[2]);
-    return new JumpInstruction("J", valueA, valueB, valueC);
-  }
 }

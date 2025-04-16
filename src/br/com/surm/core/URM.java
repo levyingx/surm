@@ -27,10 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import br.com.surm.core.instruction.Instruction;
-import br.com.surm.core.instruction.JumpInstruction;
-import br.com.surm.core.instruction.SuccInstruction;
-import br.com.surm.core.instruction.TransferInstruction;
-import br.com.surm.core.instruction.ZeroInstruction;
+import br.com.surm.core.instruction.InstructionManyArgs;
+import br.com.surm.core.instruction.InstructionOneArg;
 
 /**
  * 
@@ -57,10 +55,7 @@ public class URM {
     this.program = program;
     this.countProgram = 1;
     this.registers = new ArrayList<>();
-    this.addRegisters(10);
-    for(int i = 0; i < 10; i++) {
-      this.registers.set(i, 0);
-    }
+    this.addRegisters(this.program.getMaxRegisterUsed()+1);
   }
 
   /**
@@ -77,6 +72,7 @@ public class URM {
     for(int i = 0; i < values.length; i++) {
       this.registers.add(values[i]);
     }
+    this.addRegisters(this.program.getMaxRegisterUsed()+1);
   }
 
   /**
@@ -93,6 +89,7 @@ public class URM {
     for (int i : values) {
       this.registers.add(i);
     }
+    this.addRegisters(this.program.getMaxRegisterUsed()+1);
   }
 
   /**
@@ -108,6 +105,7 @@ public class URM {
       if(registers.size() != values.size()) {
         throw new IllegalArgumentException("The number of registers is different from the number of values.");
       } else {
+        this.program = program;
         this.registers = new ArrayList<>();
         ArrayList<Integer> secureCopy = new ArrayList<>(registers);
         Collections.sort(secureCopy);
@@ -118,9 +116,9 @@ public class URM {
           int n = values.get(i);
           this.registers.set(m, n);
         }
+        this.addRegisters(this.program.getMaxRegisterUsed());
       }
     } finally {
-      this.program = program;
       this.countProgram = 1;
     }
   }
@@ -133,32 +131,32 @@ public class URM {
   public void runInstruction() {
     if(this.countProgram <= this.program.getSize()) {
       Instruction instruction = this.program.getInstruction(countProgram - 1);
-      if(instruction instanceof ZeroInstruction) {
-        ZeroInstruction tmp = (ZeroInstruction) instruction;
-        int n = tmp.getData();
+      if(instruction.getCode().equals("Z")){
+        InstructionOneArg tmpInstruction = (InstructionOneArg) instruction;
+        int n = tmpInstruction.getData();
         this.registers.set(n, 0);
         this.countProgram++;
       } else {
-        if(instruction instanceof SuccInstruction) {
-          SuccInstruction tmp = (SuccInstruction) instruction;
-          int n = tmp.getData();
-          int v = this.registers.get(n) + 1;
-          this.registers.set(n, v);
+        if(instruction.getCode().equals("S")) {
+          InstructionOneArg tmpInstruction = (InstructionOneArg) instruction;
+          int n = tmpInstruction.getData();
+          int value = this.registers.get(n);
+          this.registers.set(n, value + 1);
           this.countProgram++;
         } else {
-          if(instruction instanceof TransferInstruction) {
-            TransferInstruction tmp = (TransferInstruction) instruction;
-            int m = tmp.getFirstData();
-            int n = tmp.getSecondData();
-            int v = this.registers.get(m);
-            this.registers.set(n, v);
+          if(instruction.getCode().equals("T")) {
+            InstructionManyArgs tmpInstruction = (InstructionManyArgs) instruction;
+            int m = tmpInstruction.getSpecificArg(0);
+            int n = tmpInstruction.getSpecificArg(1);
+            int value = this.registers.get(m);
+            this.registers.set(n, value);
             this.countProgram++;
           } else {
-            JumpInstruction tmp = (JumpInstruction) instruction;
-            int m = tmp.getFirstData();
-            int n = tmp.getSecondData();
-            int p = tmp.getThirdData();
-            if(this.registers.get(m) == this.registers.get(n)) {
+            InstructionManyArgs tmpInstruction = (InstructionManyArgs) instruction;
+            int m = tmpInstruction.getSpecificArg(0);
+            int n = tmpInstruction.getSpecificArg(1);
+            int p = tmpInstruction.getSpecificArg(2);
+            if(this.registers.get(m) == this.registers.get(n)){
               this.countProgram = p;
             } else {
               this.countProgram++;

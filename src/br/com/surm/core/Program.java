@@ -26,6 +26,8 @@ package br.com.surm.core;
 import java.util.ArrayList;
 
 import br.com.surm.core.instruction.Instruction;
+import br.com.surm.core.instruction.InstructionManyArgs;
+import br.com.surm.core.instruction.InstructionOneArg;
 
 /**
  * 
@@ -74,6 +76,33 @@ public class Program {
     } else {
         return null;
     }
+  }
+
+  /**
+   * 
+   * Method that returns the largest address (register) used by the program.
+   * 
+   * @return The address of the register.
+   */
+  public int getMaxRegisterUsed() {
+    int max = 0;
+    for(int i = 0; i < this.instructions.size(); i++){
+      Instruction instruction = this.instructions.get(i);
+      if(instruction instanceof InstructionOneArg){
+        InstructionOneArg tmpInstruction = (InstructionOneArg) instruction;
+        if(max < tmpInstruction.getData()){
+          max = tmpInstruction.getData();
+        }
+      } else {
+        InstructionManyArgs tmpInstruction = (InstructionManyArgs) instruction;
+        for(int j = 0; j < 2; j++){
+          if(max < tmpInstruction.getSpecificArg(j)){
+            max = tmpInstruction.getSpecificArg(j);
+          }
+        }
+      }
+    }
+    return max;
   }
 
 
