@@ -23,32 +23,37 @@
  */
 package br.com.surm.core.instruction;
 
+import java.util.ArrayList;
+
 /**
  * 
- * This class implements the definition of the transfer instruction used on Unlimited Register Machine, as presented in the book,
+ * This class implements the definition of the transfer and Jump instructions used on Unlimited Register Machine, as presented in the book,
  * Computability: An Introduction to Recursive Function Theory by Nigel Cutland. 
  * 
  * @author Valdigleis (valdigleis@dimap.ufrn.br)
  * @version 1.0
  */
-public class TransferInstruction extends Instruction {
+public class InstructionManyArgs extends Instruction {
 
-  private final int firstData;
-  private final int secondData;
+  private int[] data;
 
-  public TransferInstruction(String code, int firstData, int secondData) {
+  public InstructionManyArgs(String code, ArrayList<Integer> data) {
     super(code);
-    this.firstData = firstData;
-    this.secondData = secondData;
+    this.data = new int[data.size()];
+    for (int i = 0; i < data.size(); i++) {
+      this.data[i] = data.get(i);
+    }
   }
 
-
-  public int getFirstData() {
-    return firstData;
-  }
-
-  public int getSecondData() {
-    return secondData;
+  /**
+   * 
+   * Returns a specific argument present in the instruction.
+   * 
+   * @param argNumber The argument number
+   * @return
+   */
+  public int getSpecificArg(int argNumber) {
+    return this.data[argNumber];
   }
 
   @Override
@@ -58,7 +63,15 @@ public class TransferInstruction extends Instruction {
 
   @Override
   public String toString() {
-    return getCode() + "(" + this.firstData + "," + this.secondData + ")";
+    String output = getCode() + "(";
+    for(int i = 0; i < this.data.length; i++) {
+      if(i < this.data.length - 1){
+        output = output + this.data[i] + ", ";
+      } else {
+        output = output + this.data[i];
+      }
+    }
+    return  output + ")";
   }
   
 }

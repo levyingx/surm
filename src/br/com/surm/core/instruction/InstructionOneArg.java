@@ -25,13 +25,13 @@ package br.com.surm.core.instruction;
 
 /**
  * 
- * This class implements the definition of the zero instruction used on Unlimited Register Machine, as presented in the book,
+ * This class implements the definition of the zero and sucessor instructions used on Unlimited Register Machine, as presented in the book,
  * Computability: An Introduction to Recursive Function Theory by Nigel Cutland. 
  * 
  * @author Valdigleis (valdigleis@dimap.ufrn.br)
  * @version 1.0
  */
-public class ZeroInstruction extends Instruction {
+public class InstructionOneArg extends Instruction {
 
   private final int data;
 
@@ -42,7 +42,7 @@ public class ZeroInstruction extends Instruction {
    * @param code The instruction code (Z or S).
    * @param data The data for the instruction.
    */
-  public ZeroInstruction(String code, int data) {
+  public InstructionOneArg(String code, int data) {
     super(code);
     this.data = data;
   }
